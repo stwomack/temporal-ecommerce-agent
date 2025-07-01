@@ -10,6 +10,7 @@ from src.models.order import (
     OrderStatus, PaymentStatus, ShippingStatus
 )
 from src.workflows.order_processing import OrderProcessingWorkflow
+from src.utils.json_encoder import serialize_for_temporal
 
 load_dotenv()
 
@@ -116,7 +117,7 @@ async def run_demo():
         try:
             result = await client.execute_workflow(
                 OrderProcessingWorkflow.run,
-                order,
+                order.to_dict(),
                 id=f"order-processing-{order.id}",
                 task_queue=os.getenv("TEMPORAL_TASK_QUEUE", "ecommerce-order-processing")
             )

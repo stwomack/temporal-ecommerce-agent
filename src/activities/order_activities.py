@@ -13,11 +13,11 @@ logger = logging.getLogger(__name__)
 
 
 @activity.defn
-async def process_order_intake(order: Order) -> Dict[str, Any]:
-    logger.info(f"Processing order intake for order {order.id}")
+async def process_order_intake(order_data: Dict[str, Any]) -> Dict[str, Any]:
+    logger.info(f"Processing order intake for order {order_data['id']}")
     
     agent = OrderIntakeAgent()
-    context = {"order": order}
+    context = {"order": Order(**order_data)}
     
     decision = await agent.process(context)
     
@@ -33,11 +33,11 @@ async def process_order_intake(order: Order) -> Dict[str, Any]:
 
 
 @activity.defn
-async def process_payment(order: Order, retry_count: int = 0) -> Dict[str, Any]:
-    logger.info(f"Processing payment for order {order.id} (retry {retry_count})")
+async def process_payment(order_data: Dict[str, Any], retry_count: int = 0) -> Dict[str, Any]:
+    logger.info(f"Processing payment for order {order_data['id']} (retry {retry_count})")
     
     agent = PaymentAgent()
-    context = {"order": order, "retry_count": retry_count}
+    context = {"order": Order(**order_data), "retry_count": retry_count}
     
     decision = await agent.process(context)
     
@@ -54,11 +54,11 @@ async def process_payment(order: Order, retry_count: int = 0) -> Dict[str, Any]:
 
 
 @activity.defn
-async def process_fulfillment(order: Order) -> Dict[str, Any]:
-    logger.info(f"Processing fulfillment for order {order.id}")
+async def process_fulfillment(order_data: Dict[str, Any]) -> Dict[str, Any]:
+    logger.info(f"Processing fulfillment for order {order_data['id']}")
     
     agent = FulfillmentAgent()
-    context = {"order": order}
+    context = {"order": Order(**order_data)}
     
     decision = await agent.process(context)
     
@@ -75,15 +75,15 @@ async def process_fulfillment(order: Order) -> Dict[str, Any]:
 
 @activity.defn
 async def handle_customer_service(
-    order: Order,
+    order_data: Dict[str, Any],
     issue_type: str,
     escalation_reason: str
 ) -> Dict[str, Any]:
-    logger.info(f"Handling customer service for order {order.id}")
+    logger.info(f"Handling customer service for order {order_data['id']}")
     
     agent = CustomerServiceAgent()
     context = {
-        "order": order,
+        "order": Order(**order_data),
         "issue_type": issue_type,
         "escalation_reason": escalation_reason
     }
@@ -102,46 +102,46 @@ async def handle_customer_service(
 
 
 @activity.defn
-async def update_order_status(order: Order, status: OrderStatus) -> Order:
-    logger.info(f"Updating order {order.id} status to {status}")
+async def update_order_status(order_data: Dict[str, Any], status: OrderStatus) -> Dict[str, Any]:
+    logger.info(f"Updating order {order_data['id']} status to {status}")
     
-    order.status = status
-    order.updated_at = datetime.now()
+    order_data['status'] = status
+    order_data['updated_at'] = datetime.now().isoformat()
     
-    return order
+    return order_data
 
 
 @activity.defn
-async def update_payment_status(order: Order, status: PaymentStatus) -> Order:
-    logger.info(f"Updating order {order.id} payment status to {status}")
+async def update_payment_status(order_data: Dict[str, Any], status: PaymentStatus) -> Dict[str, Any]:
+    logger.info(f"Updating order {order_data['id']} payment status to {status}")
     
-    order.payment_status = status
-    order.updated_at = datetime.now()
+    order_data['payment_status'] = status
+    order_data['updated_at'] = datetime.now().isoformat()
     
-    return order
+    return order_data
 
 
 @activity.defn
-async def update_shipping_status(order: Order, status: ShippingStatus) -> Order:
-    logger.info(f"Updating order {order.id} shipping status to {status}")
+async def update_shipping_status(order_data: Dict[str, Any], status: ShippingStatus) -> Dict[str, Any]:
+    logger.info(f"Updating order {order_data['id']} shipping status to {status}")
     
-    order.shipping_status = status
-    order.updated_at = datetime.now()
+    order_data['shipping_status'] = status
+    order_data['updated_at'] = datetime.now().isoformat()
     
-    return order
+    return order_data
 
 
 @activity.defn
-async def send_notification(order: Order, message: str) -> None:
-    logger.info(f"Sending notification for order {order.id}: {message}")
+async def send_notification(order_data: Dict[str, Any], message: str) -> None:
+    logger.info(f"Sending notification for order {order_data['id']}: {message}")
     
     await asyncio.sleep(0.1)
-    logger.info(f"Notification sent to {order.customer.email}: {message}")
+    logger.info(f"Notification sent to {order_data['customer']['email']}: {message}")
 
 
 @activity.defn
-async def log_order_event(order: Order, event: str, details: str) -> None:
-    logger.info(f"Order {order.id} - {event}: {details}")
+async def log_order_event(order_data: Dict[str, Any], event: str, details: str) -> None:
+    logger.info(f"Order {order_data['id']} - {event}: {details}")
     
     await asyncio.sleep(0.1)
-    logger.info(f"Event logged: {event} for order {order.id}") 
+    logger.info(f"Event logged: {event} for order {order_data['id']}") 

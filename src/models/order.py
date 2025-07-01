@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
-from pydantic import BaseModel, Field
+from typing import List, Optional, Dict, Any
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class OrderStatus(str, Enum):
@@ -66,6 +66,8 @@ class PaymentMethod(BaseModel):
 
 
 class Order(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    
     id: str
     customer: Customer
     products: List[Product]
@@ -78,6 +80,13 @@ class Order(BaseModel):
     payment_method: Optional[PaymentMethod] = None
     tracking_number: Optional[str] = None
     notes: Optional[str] = None
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary without datetime fields."""
+        data = self.model_dump()
+        data.pop('created_at', None)
+        data.pop('updated_at', None)
+        return data
 
 
 class OrderValidationResult(BaseModel):
