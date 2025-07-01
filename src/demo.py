@@ -97,7 +97,7 @@ async def run_demo():
         namespace=os.getenv("TEMPORAL_NAMESPACE", "default")
     )
     
-    logger.info("🚀 Starting Multi-Agent E-commerce Order Processing Demo")
+    logger.info("Starting Multi-Agent E-commerce Order Processing Demo")
     logger.info("=" * 60)
     
     demo_orders = [
@@ -108,7 +108,7 @@ async def run_demo():
     ]
     
     for order_name, order in demo_orders:
-        logger.info(f"\n📦 Processing {order_name}")
+        logger.info(f"\nProcessing {order_name}")
         logger.info(f"   Order ID: {order.id}")
         logger.info(f"   Customer: {order.customer.name}")
         logger.info(f"   Amount: ${order.total_amount:.2f}")
@@ -122,7 +122,7 @@ async def run_demo():
                 task_queue=os.getenv("TEMPORAL_TASK_QUEUE", "ecommerce-order-processing")
             )
             
-            logger.info(f"✅ {order_name} Result: {result['status']}")
+            logger.info(f"{order_name} Result: {result['status']}")
             if result.get('reason'):
                 logger.info(f"   Reason: {result['reason']}")
             if result.get('tracking_number'):
@@ -134,8 +134,8 @@ async def run_demo():
         await asyncio.sleep(2)
     
     logger.info("\n" + "=" * 60)
-    logger.info("🎉 Demo completed! Check Temporal UI for detailed workflow execution.")
-    logger.info("💡 Run 'temporal web' to view the Temporal UI")
+    logger.info("Demo completed! Check Temporal UI for detailed workflow execution.")
+    logger.info("Run 'temporal web' to view the Temporal UI")
 
 
 if __name__ == "__main__":
